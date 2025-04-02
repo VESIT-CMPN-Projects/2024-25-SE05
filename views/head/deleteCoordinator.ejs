@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Delete Coordinators</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-100">
+    <!-- Navbar -->
+    <%- include("../partials/navbar.ejs") %>
+
+    <div class="container mx-auto p-8">
+      <h1 class="text-2xl font-bold text-center text-red-600 mb-6">
+        Delete Coordinators
+      </h1>
+
+      <% if (!coordinators || coordinators.length === 0) { %>
+      <p class="text-center text-gray-500">No coordinators available.</p>
+      <% } else { %>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <% coordinators.forEach(coordinator => { %>
+        <div
+          class="bg-white p-6 rounded-lg shadow-lg flex flex-col items-center"
+          id="coordinator-<%= coordinator.id %>"
+        >
+          <!-- Coordinator Image -->
+          <img
+            src="<%= coordinator.image %>"
+            alt="<%= coordinator.name %>"
+            class="w-24 h-24 rounded-full object-cover border border-gray-300 shadow-md"
+          />
+
+          <h2 class="text-xl font-semibold text-gray-800 mt-4">
+            <%= coordinator.name %>
+          </h2>
+
+          <button
+            class="mt-4 px-4 py-2 bg-red-500 text-white rounded-lg shadow hover:bg-red-600 open-modal"
+            data-id="<%= coordinator.id %>"
+            data-name="<%= coordinator.name %>"
+          >
+            Delete
+          </button>
+        </div>
+        <% }) %>
+      </div>
+      <% } %>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div
+      id="deleteModal"
+      class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center z-50"
+    >
+      <div class="bg-white p-6 rounded-lg shadow-lg w-96 text-center">
+        <h2 class="text-lg font-bold text-gray-800 mb-4">Confirm Deletion</h2>
+        <p id="deleteMessage" class="text-gray-600 mb-4"></p>
+        <div class="flex justify-center gap-4">
+          <button
+            id="confirmDelete"
+            class="px-4 py-2 bg-red-500 text-white rounded-lg shadow hover:bg-red-600"
+          >
+            Yes, Delete
+          </button>
+          <button
+            id="cancelDelete"
+            class="px-4 py-2 bg-gray-400 text-white rounded-lg shadow hover:bg-gray-500"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let selectedCoordinatorId = null;
+
+      document.querySelectorAll(".open-modal").forEach((button) => {
+        button.addEventListener("click", (event) => {
+          selectedCoordinatorId = event.target.dataset.id;
+          const coordinatorName = event.target.dataset.name;
+          document.getElementById(
+            "deleteMessage"
+          ).innerText = `Are you sure you want to delete ${coordinatorName}?`;
+          document.getElementById("deleteModal").classList.remove("hidden");
+        });
+      });
+
+      document.getElementById("cancelDelete").addEventListener("click", () => {
+        document.getElementById("deleteModal").classList.add("hidden");
+      });
+
+      document
+        .getElementById("confirmDelete")
+        .addEventListener("click", async () => {
+          if (!selectedCoordinatorId) return;
+
+          const response = await fetch("/coordinator/deleteCoordinator", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ id: Number(selectedCoordinatorId) }),
+          });
+
+          const result = await response.json();
+          if (result.success) {
+            document
+              .getElementById(`coordinator-${selectedCoordinatorId}`)
+              .remove();
+            alert("Coordinator deleted successfully.");
+          } else {
+            alert("Failed to delete coordinator.");
+          }
+
+          document.getElementById("deleteModal").classList.add("hidden");
+        });
+    </script>
+  </body>
+</html>
