@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<%= locale %>">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login As</title>
+    <title><%= __('login_as') %></title>
     <style>
       body {
         display: flex;
@@ -20,6 +20,7 @@
         border-radius: 10px;
         box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
         text-align: center;
+        position: relative;
       }
       h2 {
         color: #5a50ea;
@@ -41,14 +42,29 @@
       .btn:hover {
         background: #1a5cdc;
       }
+      .lang-select {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        padding: 5px 10px;
+        font-size: 14px;
+        border-radius: 6px;
+      }
     </style>
   </head>
   <body>
     <div class="container">
-      <h2>Login As</h2>
-      <a href="/auth/login?role=teacher" class="btn">Teacher</a>
-      <a href="/auth/login?role=coordinator" class="btn">Coordinator</a>
-      <a href="/auth/login?role=head" class="btn">Head</a>
+      <form method="POST" action="/set-language" class="lang-form">
+        <select name="lang" onchange="this.form.submit()" class="lang-select">
+          <option value="en" <%= locale === 'en' ? 'selected' : '' %>>English</option>
+          <option value="hi" <%= locale === 'hi' ? 'selected' : '' %>>हिन्दी</option>
+        </select>
+      </form>
+
+      <h2><%= __('login_as') %></h2>
+      <a href="/auth/login?role=teacher" class="btn"><%= __('teacher') %></a>
+      <a href="/auth/login?role=coordinator" class="btn"><%= __('coordinator') %></a>
+      <a href="/auth/login?role=head" class="btn"><%= __('head') %></a>
     </div>
   </body>
 </html>

@@ -1,63 +1,60 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<%= locale %>">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Teacher Details</title>
+    <title><%= __('teacher_details') %></title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Tailwind CDN -->
   </head>
   <body class="bg-gray-100">
-    <!-- Navbar -->
     <%- include("../partials/navbar.ejs") %>
 
     <div class="container mx-auto p-8">
       <h1 class="text-2xl font-bold text-center text-red-500 mb-6">
-        Teacher Details - <%= teacher.name %>
+        <%= __('teacher_details') %> - <%= teacher.name %>
       </h1>
 
       <% if (lectures.length === 0) { %>
-      <p class="text-center text-gray-500">No lecture records available.</p>
+      <p class="text-center text-gray-500"><%= __('no_lecture_records') %></p>
       <% } else { %>
       <div class="w-full flex flex-col items-center p-4">
         <% lectures.forEach(lecture => { %>
         <div
           class="grid grid-cols-2 grid-rows-2 gap-4 bg-white p-6 rounded-2xl shadow-lg mb-6 w-[600px] relative"
         >
-          <!-- Entry Image (Top Left) -->
+          <!-- Entry Image -->
           <div class="row-span-1 flex justify-center items-center">
             <img
               src="<%= lecture.entryImage %>"
-              alt="Entry Image"
+              alt="<%= __('entry_image') %>"
               class="zoomable w-36 h-28 object-cover rounded-lg border border-gray-300 shadow-md cursor-pointer"
             />
           </div>
 
-          <!-- Lecture Details (Top Right + Bottom Right Combined) -->
+          <!-- Lecture Details -->
           <div class="row-span-2 px-4 flex flex-col justify-between">
             <h2 class="text-lg font-bold text-blue-600 mb-2">
               <%= lecture.date %> - <%= lecture.time %>
             </h2>
             <p class="text-gray-700">
-              <strong>📍 Address:</strong> <%= lecture.address %>
+              <strong>📍 <%= __('address') %>:</strong> <%= lecture.address %>
             </p>
             <p class="text-gray-700">
-              <strong>👥 Students Present:</strong> <%= lecture.studentsPresent
-              %>
+              <strong>👥 <%= __('students_present') %>:</strong> <%=
+              lecture.studentsPresent %>
             </p>
             <p class="text-gray-700">
-              <strong>📖 Activity:</strong> <%= lecture.activity %>
+              <strong>📖 <%= __('activity') %>:</strong> <%= lecture.activity %>
             </p>
-            <!-- Include Add to Report Button -->
-            <%- include('../partials/addToReport', { lecture: lecture ,
-            teacher:teacher}) %>
+            <%- include('../partials/addToReport', { lecture: lecture , teacher:
+            teacher }) %>
           </div>
 
-          <!-- Exit Image (Bottom Left) -->
+          <!-- Exit Image -->
           <div class="row-span-1 flex justify-center items-center">
             <img
               src="<%= lecture.exitImage %>"
-              alt="Exit Image"
+              alt="<%= __('exit_image') %>"
               class="zoomable w-36 h-28 object-cover rounded-lg border border-gray-300 shadow-md cursor-pointer"
             />
           </div>
@@ -65,7 +62,7 @@
         <% }) %>
       </div>
 
-      <!-- Fullscreen Image Modal -->
+      <!-- Image Modal -->
       <div
         id="imageModal"
         class="fixed inset-0 bg-black bg-opacity-75 hidden flex justify-center items-center z-50"
@@ -92,7 +89,6 @@
           modal.classList.add("hidden");
         });
       </script>
-
       <% } %>
     </div>
   </body>

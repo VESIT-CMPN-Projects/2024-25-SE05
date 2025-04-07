@@ -126,6 +126,7 @@ const getCoordinatorReport = (req, res, next) => {
     coordinator: fakeCoordinator,
     groupedLectures,
     currentPage: "coordinatorReport",
+    locale: req.getLocale(),
   });
 };
 
@@ -147,6 +148,7 @@ const getLectureDetails = (req, res, next) => {
   res.render("head/lectureDetails", {
     lecture,
     currentPage: "lectureDetails",
+    locale: req.getLocale(),
   });
 };
 
