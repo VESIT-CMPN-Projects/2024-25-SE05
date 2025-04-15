@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lecture Details</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-100">
+    <!-- Navbar -->
+    <%- include("../partials/navbar.ejs", currUser) %>
+
+    <!-- Page Content -->
+    <div class="w-full flex flex-col items-center p-6">
+      <h1 class="text-2xl font-bold text-blue-600 mb-4">Lecture Details</h1>
+
+      <div
+        class="bg-white p-6 rounded-2xl shadow-lg w-full max-w-lg flex flex-col gap-4"
+      >
+        <!-- Entry + Exit Images -->
+        <div class="flex justify-between gap-4 flex-wrap sm:flex-nowrap">
+          <img
+            src="<%= lecture.entry_image.path %>"
+            alt="<%= lecture.entry_image.fieldname %>"
+            class="zoomable w-full sm:w-1/2 h-32 object-contain bg-white rounded-lg border border-gray-300 shadow-md cursor-pointer"
+          />
+          <img
+            src="<%= lecture.exit_image.path %>"
+            alt="<%= lecture.exit_image.fieldname %>"
+            class="zoomable w-full sm:w-1/2 h-32 object-contain bg-white rounded-lg border border-gray-300 shadow-md cursor-pointer"
+          />
+        </div>
+
+        <!-- Lecture Info -->
+        <div class="text-sm sm:text-base px-1">
+          <h2 class="text-base sm:text-lg font-bold text-blue-600 mb-2">
+            <%= lecture.date.toDateString() %> - <%=
+            lecture.time.toLocaleString().split(", ")[1] %>
+          </h2>
+          <p class="text-gray-700">
+            <strong>📍 Address:</strong> <%= lecture.address %>
+          </p>
+          <p class="text-gray-700">
+            <strong>👥 Students Present:</strong> <%= lecture.attendance %>
+          </p>
+          <p class="text-gray-700 break-words">
+            <strong>📖 Activity:</strong>
+            <span class="whitespace-pre-wrap inline">
+              <%= lecture.activity %>
+            </span>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fullscreen Image Modal -->
+    <div
+      id="imageModal"
+      class="fixed inset-0 bg-black bg-opacity-75 hidden flex justify-center items-center z-50"
+    >
+      <img
+        id="modalImage"
+        class="max-w-3xl max-h-[80vh] rounded-lg shadow-2xl"
+      />
+    </div>
+
+    <script>
+      const images = document.querySelectorAll(".zoomable");
+      const modal = document.getElementById("imageModal");
+      const modalImage = document.getElementById("modalImage");
+
+      images.forEach((image) => {
+        image.addEventListener("click", () => {
+          modalImage.src = image.src;
+          modal.classList.remove("hidden");
+        });
+      });
+
+      modal.addEventListener("click", () => {
+        modal.classList.add("hidden");
+      });
+    </script>
+  </body>
+</html>

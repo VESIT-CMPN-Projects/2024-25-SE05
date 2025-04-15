@@ -1,0 +1,79 @@
+const express = require("express");
+
+const teacherRouter = express.Router();
+const Teacher = require("../models/teacher.js");
+const TeacherReport = require("../models/teacherReport.js");
+
+const {LectureStorage} = require("../cloudConfig.js");
+const multer = require('multer');
+const upload = multer({storage: LectureStorage}); 
+
+const { getSubmitLec } = require("../controllers/teacherController");
+
+// Add authentication middleware
+const isAuthenticated = (req, res, next) => {
+    if (req.isAuthenticated() && req.user.constructor.modelName === 'Teacher') {
+        return next();
+    }
+    res.redirect("/auth/login/teacher");
+  };
+  
+  // Apply middleware to all coordinator routes
+  teacherRouter.use(isAuthenticated);
+
+teacherRouter.get("/lecture", (req, res) => {
+    const {username, picture} = req.user;
+    const path = picture.path;
+    res.render("teacher/lecture", { username, path, currentPage: "lecture" });
+});
+
+teacherRouter.post("/lecture", upload.fields([{name: "entryImage", maxCount: 1}, {name: "exitImage", maxCount: 1}]), async (req, res) => {
+    try {
+        // Validate file uploads
+        if (!req.files || !req.files.entryImage || !req.files.exitImage) {
+            return res.status(400).send("Both entry and exit images are required");
+        }
+
+        const {date, time, address, attendance, activity} = req.body;
+        const {username} = req.user;
+
+        // Find and update teacher
+        const teacher = await Teacher.findOne({username});
+        if (!teacher) {
+            return res.status(404).send("Teacher not found");
+        }
+
+        // Create report object matching schema structure
+        const report = {
+            date: new Date(date),
+            time: new Date(`${date}T${time}`),
+            address,
+            attendance,
+            activity,
+            entry_image: {
+                fieldname: req.files.entryImage[0].fieldname,
+                path: req.files.entryImage[0].path
+            },
+            exit_image: {
+                fieldname: req.files.exitImage[0].fieldname,
+                path: req.files.exitImage[0].path
+            },
+            teacher: teacher._id
+        };
+
+        const newReport = new TeacherReport(report);
+        const savedReport = await newReport.save();
+        
+        if (savedReport) {
+            res.redirect("/");
+        } else {
+            res.redirect("/teacher/lecture");
+        }
+         
+    } catch (error) {
+        console.error("Error submitting lecture report:", error);
+        res.status(500).send("Error submitting report");
+    }
+});
+
+module.exports = teacherRouter;
